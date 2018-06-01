@@ -12,5 +12,7 @@ Learning goals:
   * Build a homepage with basic information about the project.
   * Must be able to create an account and go to a personal dashboard with all stocks
   * Use acquired data for analysis or display plots (matplotlib..?)
+  * ...
+  * profit
 
 

@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-
+from django.template import loader
 
 from bs4 import BeautifulSoup
 import requests
@@ -12,11 +12,13 @@ def index(request):
 	#     stock = input("What stock are you interested in? \n")
 	# except:
 	#     stock = raw_input("What stock are you interested in? \n")
-	stock = "FB"
+	stock_name = "Facebook"
+	stock_symbol = "FB"
+
 	parameter_options = {"TIME_SERIES_INTRADAY": 
-							{"function": "TIME_SERIES_INTRADAY", "symbol": stock.upper(), "interval": "1min", "apikey": api_key},
+							{"function": "TIME_SERIES_INTRADAY", "symbol": stock_symbol.upper(), "interval": "1min", "apikey": api_key},
 						"TIME_SERIES_DAILY": 
-							{"function": "TIME_SERIES_DAILY", "symbol": stock.upper(), "apikey": api_key}}
+							{"function": "TIME_SERIES_DAILY", "symbol": stock_symbol.upper(), "apikey": api_key}}
 	parameters = parameter_options["TIME_SERIES_DAILY"]
 	response = requests.get('https://www.alphavantage.co/query?', params= parameters)
 
@@ -31,6 +33,7 @@ def index(request):
 	template = loader.get_template('stock_data/index.html')
 	context = {
         'ohlc_data': ohlc_data,
+        'stock_name': stock_name
     }
 
 	return HttpResponse(template.render(context, request))

@@ -1,9 +1,10 @@
 {% if ohlc_data %}
+	Latest data for: {{ stock_name }}
     <ul>
-    {% for data_point in ohlc_data %}
-        <li>ohlc_data[</li>
+    {% for data_point_key, data_point_value in ohlc_data.items %}
+        <li>{{ data_point_key }}: {{ data_point_value }}</li>
     {% endfor %}
     </ul>
 {% else %}
-    <p>There is currently no stock data available</p>
+    <p>There is currently no stock data available for </p>
 {% endif %}

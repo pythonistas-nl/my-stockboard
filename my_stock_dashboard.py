@@ -15,7 +15,7 @@ response = requests.get('https://www.alphavantage.co/query?', params= parameters
 json_data = json.loads(response.content)
 last_update_time = json_data["Meta Data"]["3. Last Refreshed"]
 last_update_data = json_data["Time Series (1min)"][last_update_time]
-total_volume
+#total_volume
 
 markets_open_date = "2018-06-01" # 09:30:00"
 timestamp_data = "09:30:00"

@@ -1,0 +1,9 @@
+{% if ohlc_data %}
+    <ul>
+    {% for data_point in ohlc_data %}
+        <li>ohlc_data[</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>There is currently no stock data available</p>
+{% endif %}

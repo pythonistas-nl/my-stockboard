@@ -1,5 +1,5 @@
 
-	<form action="{% url 'stock_data:result' %}" method="post">
+	<form action="{% url 'stock_data:data_fetching' %}" method="post">
 		{% csrf_token %}
   		<label for="POST-stock-symbol">Which stock do you want information on?</label>
   		<input id="POST-stock-symbol" type="text" name="stock_symbol">

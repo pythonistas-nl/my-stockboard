@@ -1,10 +1,7 @@
-{% if ohlc_data %}
-	Latest data for: {{ stock_name }}
-    <ul>
-    {% for data_point_key, data_point_value in ohlc_data.items %}
-        <li>{{ data_point_key }}: {{ data_point_value }}</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>There is currently no stock data available for </p>
-{% endif %}
+
+	<form action="{% url 'stock_data:result' %}" method="post">
+		{% csrf_token %}
+  		<label for="POST-stock-symbol">Which stock do you want information on?</label>
+  		<input id="POST-stock-symbol" type="text" name="stock_symbol">
+  		<input type="submit" value="Submit">
+	</form>

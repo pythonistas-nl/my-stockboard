@@ -8,12 +8,14 @@ import json
 api_key = "MQ6XW7KDB2DF9M5O"
 
 def index(request):
-	# try:
-	#     stock = input("What stock are you interested in? \n")
-	# except:
-	#     stock = raw_input("What stock are you interested in? \n")
+	template = loader.get_template('stock_data/index.html')
+	context = {
+    }
+	return HttpResponse(template.render(context, request))
+
+def result(request):
 	stock_name = "Facebook"
-	stock_symbol = "FB"
+	stock_symbol = request.POST['stock_symbol'].upper()
 
 	parameter_options = {"TIME_SERIES_INTRADAY": 
 							{"function": "TIME_SERIES_INTRADAY", "symbol": stock_symbol.upper(), "interval": "1min", "apikey": api_key},
@@ -30,10 +32,11 @@ def index(request):
 
 	markets_open_date = "2018-06-01" # 09:30:00"
 	timestamp_data = "09:30:00"
-	template = loader.get_template('stock_data/index.html')
+	template = loader.get_template('stock_data/stock_info.html')
 	context = {
         'ohlc_data': ohlc_data,
-        'stock_name': stock_name
+        'stock_name': stock_name,
+        'stock_symbol': stock_symbol
     }
 
 	return HttpResponse(template.render(context, request))

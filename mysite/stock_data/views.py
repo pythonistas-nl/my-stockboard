@@ -8,12 +8,11 @@ from bs4 import BeautifulSoup
 import requests
 import json
 
-api_key = "MQ6XW7KDB2DF9M5O"
-
 def index(request):
 	return render(request, 'stock_data/index.html')
 
 def data_fetching(request):
+	api_key = "MQ6XW7KDB2DF9M5O"
 	#stock_name = "Facebook"
 	stock_symbol = request.POST['stock_symbol'].upper()
  
@@ -41,3 +40,5 @@ def result(request):
     }
 
 	return HttpResponse(template.render(context, request))
+
+

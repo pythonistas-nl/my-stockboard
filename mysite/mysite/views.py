@@ -51,12 +51,13 @@ def login_member(request):
 def register(request):
 	if request.method == 'POST':
 		form = RegisterForm(request.POST)
-		print("form: " + str(form))
-		print("request.POST: " + str(request.POST))
+		# print("form: " + str(form))
+		# print("request.POST: " + str(request.POST))
 		if form.is_valid():
 			# process the data in form.cleaned_data as required
 			# ...
 			form.save()
+
 			# redirect to a new URL:
 			return HttpResponseRedirect('/login/')
 

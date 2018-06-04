@@ -15,7 +15,14 @@ import json
 @login_required(login_url='/login/')
 def index(request):
 	current_user = User.objects.get(username=request.user)
-	model_stocks_list = Stocks.objects.get(user=current_user)
+	try:
+		model_stocks_list = Stocks.objects.get(user=current_user)
+	except Stocks.DoesNotExist:
+		context = {}
+		s = Stocks(user=current_user, stock_list = '')
+		s.save()
+		return render(request, 'stock_data/index.html', context)
+
 	stocks_list = model_stocks_list.stock_list.split(', ')
 	#print(str(stocks_list))
 	#context = {}
@@ -25,11 +32,11 @@ def index(request):
 								{"function": "TIME_SERIES_INTRADAY", "symbol": stock_symbol, "interval": "1min", "apikey": api_key},
 							"TIME_SERIES_DAILY": 
 								{"function": "TIME_SERIES_DAILY", "symbol": stock_symbol, "apikey": api_key}}
-		parameters = parameter_options["TIME_SERIES_DAILY"]
+		parameters = parameter_options["TIME_SERIES_INTRADAY"]
 		response = requests.get('https://www.alphavantage.co/query?', params= parameters)
 		json_data = json.loads(response.content)
 		last_update_time = json_data["Meta Data"]["3. Last Refreshed"]
-		last_update_data = json_data["Time Series (Daily)"][last_update_time]
+		last_update_data = json_data["Time Series (1min)"][last_update_time]
 		ohlc_data = last_update_data
 		return ohlc_data
 
@@ -40,7 +47,10 @@ def index(request):
 		# If the user submits the form with a company, we should add this company to their model and display it on this page
 		#Stocks.objects.getrequest.POST['stock_symbol']
 		print(request.POST['stock_symbol'])
-		stocks_list.append(request.POST['stock_symbol'])
+		if stocks_list != ['']:
+			stocks_list.append(request.POST['stock_symbol'])
+		else:
+			stocks_list = [request.POST['stock_symbol']]
 
 		model_stocks_list.stock_list = ', '.join(stocks_list)
 		model_stocks_list.save()

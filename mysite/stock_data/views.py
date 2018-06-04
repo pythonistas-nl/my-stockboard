@@ -14,6 +14,11 @@ import json
 
 @login_required(login_url='/login/')
 def index(request):
+	current_user = User.objects.get(username=request.user)
+	model_stocks_list = Stocks.objects.get(user=current_user)
+	stocks_list = model_stocks_list.stock_list.split(', ')
+	#print(str(stocks_list))
+	#context = {}
 	def stock_ohlc(stock_symbol):
 		api_key = "MQ6XW7KDB2DF9M5O"
 		parameter_options = {"TIME_SERIES_INTRADAY": 
@@ -28,18 +33,28 @@ def index(request):
 		ohlc_data = last_update_data
 		return ohlc_data
 
+	# print(stock_ohlc("fb"))
+	# context = {}
+
 	if request.method == 'POST':
 		# If the user submits the form with a company, we should add this company to their model and display it on this page
-		pass
+		#Stocks.objects.getrequest.POST['stock_symbol']
+		print(request.POST['stock_symbol'])
+		stocks_list.append(request.POST['stock_symbol'])
+
+		model_stocks_list.stock_list = ', '.join(stocks_list)
+		model_stocks_list.save()
+		# print(stocks_list)
+		# context = {}
+		# print("hello")
+		ohlc_data_dict = {}
+		for stock in stocks_list:
+			ohlc_data_dict[stock] = stock_ohlc(stock)
+		context = {'ohlc_data': ohlc_data_dict}
 	else:
 		### if the user just visits this page w/o submitting anything, then only show their stock's data
-		
-
 	#	stock_symbol = request.POST['stock_symbol'].upper()
 		# start off by fetching all the stock interests this user has from the Stocks model
-		current_user = User.objects.get(username=request.user)
-		string_stocks_list = Stocks.objects.get(user=current_user)
-		stocks_list = string_stocks_list.stock_list.split(', ')
 		ohlc_data_dict = {}
 		for stock in stocks_list:
 			ohlc_data_dict[stock] = stock_ohlc(stock)

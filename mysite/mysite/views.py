@@ -15,6 +15,7 @@ def home(request):
 	context = {
 	}
 	print(request.user)
+	print(type(request.user))
 	return HttpResponse(template.render(context, request))
 
 def login_member(request):

@@ -1,10 +1,13 @@
 <title>My Stockboard</title>
 <h1><a href={% url 'home' %}>My Stockboard</a></h1>
+<p>You are logged in as: {{ request.user }}</p>
 <hr>
 <ul>
 	<li><a href={% url 'home' %}>Home</a></li>
-	<li>Stocks portfolio</li>
+	{% if request.user != AnonymousUser %}
+	<li><a href={% url 'stock_data:index' %}>Stocks portfolio</li>
 	<li><a href={% url 'logout' %}>Logout</a></li>
+	{% endif %}
 </ul>
 <hr>
 

@@ -3,6 +3,7 @@ from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from stock_data.models import Stocks
 
 from .forms import LoginForm, RegisterForm
 

@@ -1,7 +1,7 @@
 {% extends "./base.html" %}
 
 {% block content %}
-	<form action="{% url 'stock_data:data_fetching' %}" method="post">
+	<form action="{% url 'stock_data:index' %}" method="post">
 		{% csrf_token %}
   		<label for="POST-stock-symbol">Which stock do you want information on?</label>
   		<input id="POST-stock-symbol" type="text" name="stock_symbol">
@@ -9,5 +9,18 @@
 	</form>
 
 	<p>Your stocks:</p>
-	You have not selected any stocks that you wish to follow.
+	{% if ohlc_data %}
+	<!-- Latest data for: {{ stock_symbol }} -->
+    <ul>
+    {% for stock_symbol, ohlc in ohlc_data.items %}
+    	{{ stock_symbol }}'s OHLC Data:	
+    	{% for data_point_key, data_point_value in ohlc.items %}
+        	<li>{{ data_point_key }}: {{ data_point_value }}</li>
+        {% endfor %}
+        <hr>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>There is currently no stock data available for </p>
+{% endif %}
 {% endblock %}

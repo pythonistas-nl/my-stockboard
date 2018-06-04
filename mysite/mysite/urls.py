@@ -19,7 +19,8 @@ from . import views
 
 urlpatterns = [
 	path('', views.home, name='home'),
-	path('login/', views.login, name='login'),
+    path('logout/', views.logout_member, name='logout'),
+	path('login/', views.login_member, name='login'),
 	path('register/', views.register, name='register'),
     path('stocks/', include('stock_data.urls')),
     path('admin/', admin.site.urls),

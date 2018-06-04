@@ -2,6 +2,7 @@ from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import render
+from django.contrib.auth import authenticate
 
 from .forms import LoginForm, RegisterForm
 
@@ -23,7 +24,13 @@ def login(request):
 		if form.is_valid():
 			# process the data in form.cleaned_data as required
 			# ...
-
+			user = authenticate(username='john', password='secret')
+			if user is not None:
+				c=2+2
+				# A backend authenticated the credentials
+			else:
+				c=2-2
+				# No backend authenticated the credentials
 			# redirect to a new URL:
 			return HttpResponseRedirect('/stocks/')
 

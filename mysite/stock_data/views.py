@@ -7,10 +7,10 @@ from django.contrib.auth.models import User
 
 from .models import Stocks
 
-
 from bs4 import BeautifulSoup
 import requests
 import json
+import time
 
 @login_required(login_url='/login/')
 def index(request):
@@ -34,16 +34,15 @@ def index(request):
 								{"function": "TIME_SERIES_DAILY", "symbol": stock_symbol, "apikey": api_key}}
 		parameters = parameter_options["TIME_SERIES_INTRADAY"]
 		response = requests.get('https://www.alphavantage.co/query?', params= parameters)
+		print(response.url)
 		json_data = json.loads(response.content)
+		print(json_data)
 		last_update_time = json_data["Meta Data"]["3. Last Refreshed"]
-		last_update_data = json_data["Time Series (1min)"][last_update_time]
-		ohlc_data = last_update_data
+		ohlc_data = json_data["Time Series (1min)"][last_update_time]
 		return ohlc_data
 
-	# print(stock_ohlc("fb"))
-	# context = {}
-
 	if request.method == 'POST':
+		print('i am here!')
 		# If the user submits the form with a company, we should add this company to their model and display it on this page
 		#Stocks.objects.getrequest.POST['stock_symbol']
 		print(request.POST['stock_symbol'])
@@ -60,6 +59,7 @@ def index(request):
 		ohlc_data_dict = {}
 		for stock in stocks_list:
 			ohlc_data_dict[stock] = stock_ohlc(stock)
+			time.sleep(1)
 		context = {'ohlc_data': ohlc_data_dict}
 	else:
 		### if the user just visits this page w/o submitting anything, then only show their stock's data
@@ -68,6 +68,7 @@ def index(request):
 		ohlc_data_dict = {}
 		for stock in stocks_list:
 			ohlc_data_dict[stock] = stock_ohlc(stock)
+			time.sleep(1)
 		context = {'ohlc_data': ohlc_data_dict}
 		#print(context_2)
 

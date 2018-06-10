@@ -9,18 +9,23 @@
 	</form>
 
 	<p>Your stocks:</p>
-	{% if ohlc_data %}
-	<!-- Latest data for: {{ stock_symbol }} -->
-    <ul>
+  {% if ohlc_data %}
     {% for stock_symbol, ohlc in ohlc_data.items %}
-    	{{ stock_symbol }}'s OHLC Data:	
-    	{% for data_point_key, data_point_value in ohlc.items %}
-        	<li>{{ data_point_key }}: {{ data_point_value }}</li>
-        {% endfor %}
-        <hr>
+      {{ stock_symbol }}'s OHLC Data:
+      <ul>
+          <li>Open: {{ ohlc.0 }} </li>
+          <li>High: {{ ohlc.1 }}</li>
+          <li>Low: {{ ohlc.2 }}</li>
+          <li>Close: {{ ohlc.3 }}</li>
+         <!--{% for data_point_key in ohlc %}-->
+  
+      <!--{% endfor %}-->
+     
+      </ul>
+      <hr>
     {% endfor %}
-    </ul>
-{% else %}
+  {% else %}
     <p>There is currently no stock data available for </p>
-{% endif %}
+  {% endif %}
 {% endblock %}
+

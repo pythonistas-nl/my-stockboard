@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 from .models import Stocks
 
+from iexfinance import Stock as stock_pull
 from bs4 import BeautifulSoup
 import requests
 import json
@@ -42,10 +43,10 @@ def index(request):
 		return ohlc_data
 
 	if request.method == 'POST':
-		print('i am here!')
+	#	print('i am here!')
 		# If the user submits the form with a company, we should add this company to their model and display it on this page
 		#Stocks.objects.getrequest.POST['stock_symbol']
-		print(request.POST['stock_symbol'])
+		print("hello: " + request.POST['stock_symbol'])
 		if stocks_list != ['']:
 			stocks_list.append(request.POST['stock_symbol'])
 		else:
@@ -58,8 +59,16 @@ def index(request):
 		# print("hello")
 		ohlc_data_dict = {}
 		for stock in stocks_list:
-			ohlc_data_dict[stock] = stock_ohlc(stock)
-			time.sleep(1)
+			get_stock_ohlc = stock_pull(stock).get_ohlc()
+			stock_open = get_stock_ohlc["open"]["price"]
+			print(str(stock_open))
+			stock_high = get_stock_ohlc["high"]
+			stock_low = get_stock_ohlc["low"]
+			stock_close = get_stock_ohlc["close"]["price"]
+			ohlc_data_dict[stock] = [stock_open, stock_high, stock_low, stock_close]
+			#print(ohlc_data_dict[stock])
+
+			#time.sleep(1)
 		context = {'ohlc_data': ohlc_data_dict}
 	else:
 		### if the user just visits this page w/o submitting anything, then only show their stock's data
@@ -67,8 +76,20 @@ def index(request):
 		# start off by fetching all the stock interests this user has from the Stocks model
 		ohlc_data_dict = {}
 		for stock in stocks_list:
-			ohlc_data_dict[stock] = stock_ohlc(stock)
-			time.sleep(1)
+			get_stock_ohlc = stock_pull(stock).get_ohlc()
+			stock_open = get_stock_ohlc["open"]["price"]
+			print(str(stock_open))
+			stock_high = get_stock_ohlc["high"]
+			stock_low = get_stock_ohlc["low"]
+			stock_close = get_stock_ohlc["close"]["price"]
+			test = "hello"
+			ohlc_data_dict[stock] = [stock_open, stock_high, stock_low, stock_close]
+			print(ohlc_data_dict)
+			#print(ohlc_data_dict[stock])
+		# for stock in stocks_list:
+		# 	ohlc_data_dict[stock] = stock_pull(stock)
+		# 	print(ohlc_data_dict[stock])
+		# 	time.sleep(1)
 		context = {'ohlc_data': ohlc_data_dict}
 		#print(context_2)
 

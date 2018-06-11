@@ -8,123 +8,44 @@ from django.contrib.auth.models import User
 from .models import Stocks
 
 from iexfinance import Stock as stock_pull
-from bs4 import BeautifulSoup
 import requests
 import json
 import time
 
 @login_required(login_url='/login/')
 def index(request):
+	# Check to see if the logged in user has any stocks they are following, via the Stocks model
 	current_user = User.objects.get(username=request.user)
 	try:
 		model_stocks_list = Stocks.objects.get(user=current_user)
+	# If user does not have any stocks, make a new instance for them in the Stocks model, but make it blank
 	except Stocks.DoesNotExist:
 		context = {}
 		s = Stocks(user=current_user, stock_list = '')
 		s.save()
 		return render(request, 'stock_data/index.html', context)
 
+	# If user had a stock watch list, convert that data into a list structure
 	stocks_list = model_stocks_list.stock_list.split(', ')
-	#print(str(stocks_list))
-	#context = {}
-	def stock_ohlc(stock_symbol):
-		api_key = "MQ6XW7KDB2DF9M5O"
-		parameter_options = {"TIME_SERIES_INTRADAY": 
-								{"function": "TIME_SERIES_INTRADAY", "symbol": stock_symbol, "interval": "1min", "apikey": api_key},
-							"TIME_SERIES_DAILY": 
-								{"function": "TIME_SERIES_DAILY", "symbol": stock_symbol, "apikey": api_key}}
-		parameters = parameter_options["TIME_SERIES_INTRADAY"]
-		response = requests.get('https://www.alphavantage.co/query?', params= parameters)
-		print(response.url)
-		json_data = json.loads(response.content)
-		print(json_data)
-		last_update_time = json_data["Meta Data"]["3. Last Refreshed"]
-		ohlc_data = json_data["Time Series (1min)"][last_update_time]
-		return ohlc_data
 
 	if request.method == 'POST':
-	#	print('i am here!')
-		# If the user submits the form with a company, we should add this company to their model and display it on this page
-		#Stocks.objects.getrequest.POST['stock_symbol']
-		print("hello: " + request.POST['stock_symbol'])
+		# If the user submits the form with a company name, we should add this to the stocks_list variable
 		if stocks_list != ['']:
 			stocks_list.append(request.POST['stock_symbol'])
 		else:
 			stocks_list = [request.POST['stock_symbol']]
 
+		# Now, convert the list of stocks into a string again and save it into the model
 		model_stocks_list.stock_list = ', '.join(stocks_list)
 		model_stocks_list.save()
-		# print(stocks_list)
-		# context = {}
-		# print("hello")
-		ohlc_data_dict = {}
-		for stock in stocks_list:
-			get_stock_ohlc = stock_pull(stock).get_ohlc()
-			stock_open = get_stock_ohlc["open"]["price"]
-			print(str(stock_open))
-			stock_high = get_stock_ohlc["high"]
-			stock_low = get_stock_ohlc["low"]
-			stock_close = get_stock_ohlc["close"]["price"]
-			ohlc_data_dict[stock] = [stock_open, stock_high, stock_low, stock_close]
-			#print(ohlc_data_dict[stock])
 
-			#time.sleep(1)
-		context = {'ohlc_data': ohlc_data_dict}
-	else:
-		### if the user just visits this page w/o submitting anything, then only show their stock's data
-	#	stock_symbol = request.POST['stock_symbol'].upper()
-		# start off by fetching all the stock interests this user has from the Stocks model
-		ohlc_data_dict = {}
-		for stock in stocks_list:
-			get_stock_ohlc = stock_pull(stock).get_ohlc()
-			stock_open = get_stock_ohlc["open"]["price"]
-			print(str(stock_open))
-			stock_high = get_stock_ohlc["high"]
-			stock_low = get_stock_ohlc["low"]
-			stock_close = get_stock_ohlc["close"]["price"]
-			test = "hello"
-			ohlc_data_dict[stock] = [stock_open, stock_high, stock_low, stock_close]
-			print(ohlc_data_dict)
-			#print(ohlc_data_dict[stock])
-		# for stock in stocks_list:
-		# 	ohlc_data_dict[stock] = stock_pull(stock)
-		# 	print(ohlc_data_dict[stock])
-		# 	time.sleep(1)
-		context = {'ohlc_data': ohlc_data_dict}
-		#print(context_2)
-
+	# Using the IEXTrading module, pull the latest stock data from their API for each stock the user is following
+	# Store this data in a context variable for the html generation
+	ohlc_data_dict = {}
+	for stock in stocks_list:
+		get_stock_ohlc = stock_pull(stock).get_ohlc()
+		ohlc_data_dict[stock] = [get_stock_ohlc["open"]["price"], get_stock_ohlc["high"], get_stock_ohlc["low"], get_stock_ohlc["close"]["price"]]
+	context = {'ohlc_data': ohlc_data_dict}
 	return render(request, 'stock_data/index.html', context)
-
-@login_required(login_url='/login/')
-def data_fetching(request):
-	api_key = "MQ6XW7KDB2DF9M5O"
-	#stock_name = "Facebook"
-	stock_symbol = request.POST['stock_symbol'].upper()
- 
-	parameter_options = {"TIME_SERIES_INTRADAY": 
-							{"function": "TIME_SERIES_INTRADAY", "symbol": stock_symbol, "interval": "1min", "apikey": api_key},
-						"TIME_SERIES_DAILY": 
-							{"function": "TIME_SERIES_DAILY", "symbol": stock_symbol, "apikey": api_key}}
-	parameters = parameter_options["TIME_SERIES_DAILY"]
-	response = requests.get('https://www.alphavantage.co/query?', params= parameters)
-
-	json_data = json.loads(response.content)
-	last_update_time = json_data["Meta Data"]["3. Last Refreshed"]
-	last_update_data = json_data["Time Series (Daily)"][last_update_time]
-	ohlc_data = last_update_data
-	return HttpResponseRedirect(reverse('stock_data:result'))
-
-@login_required(login_url='/login/')
-def result(request):
-	
-
-	template = loader.get_template('stock_data/stock_info.html')
-	context = {
-		'ohlc_data': ohlc_data,
-		'stock_name': stock_name,
-		'stock_symbol': stock_symbol
-	}
-
-	return HttpResponse(template.render(context, request))
 
 

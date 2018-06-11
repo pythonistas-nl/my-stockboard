@@ -8,19 +8,15 @@
   		<input type="submit" value="Submit">
 	</form>
 
-	<p>Your stocks:</p>
+	<h2>Your stocks:</h2>
   {% if ohlc_data %}
     {% for stock_symbol, ohlc in ohlc_data.items %}
-      {{ stock_symbol }}'s OHLC Data:
+      <h3>{{ stock_symbol }}'s OHLC Data:</h3>
       <ul>
           <li>Open: {{ ohlc.0 }} </li>
           <li>High: {{ ohlc.1 }}</li>
           <li>Low: {{ ohlc.2 }}</li>
-          <li>Close: {{ ohlc.3 }}</li>
-         <!--{% for data_point_key in ohlc %}-->
-  
-      <!--{% endfor %}-->
-     
+          <li>Close: {{ ohlc.3 }}</li>     
       </ul>
       <hr>
     {% endfor %}

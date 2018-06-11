@@ -43,8 +43,11 @@ def index(request):
 	# Store this data in a context variable for the html generation
 	ohlc_data_dict = {}
 	for stock in stocks_list:
-		get_stock_ohlc = stock_pull(stock).get_ohlc()
-		ohlc_data_dict[stock] = [get_stock_ohlc["open"]["price"], get_stock_ohlc["high"], get_stock_ohlc["low"], get_stock_ohlc["close"]["price"]]
+		try:
+			get_stock_ohlc = stock_pull(stock).get_ohlc()
+			ohlc_data_dict[stock] = [get_stock_ohlc["open"]["price"], get_stock_ohlc["high"], get_stock_ohlc["low"], get_stock_ohlc["close"]["price"]]
+		except ValueError:
+			pass
 	context = {'ohlc_data': ohlc_data_dict}
 	return render(request, 'stock_data/index.html', context)
 

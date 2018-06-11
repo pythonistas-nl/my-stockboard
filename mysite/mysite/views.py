@@ -13,10 +13,7 @@ import json
 
 def home(request):
 	template = loader.get_template('stock_data/home.html')
-	context = {
-	}
-	print(request.user)
-	print(type(request.user))
+	context = {}
 	return HttpResponse(template.render(context, request))
 
 def login_member(request):
